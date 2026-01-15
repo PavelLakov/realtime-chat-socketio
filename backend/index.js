@@ -4,13 +4,30 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 
 const app = express();
-app.use(cors());
+
+// ✅ ADD YOUR NETLIFY URL HERE
+const PROD_ORIGIN = "https://live-chat-socketio.netlify.app";
+
+// ✅ keep all allowed origins in one place
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://192.168.68.109:5173",
+  PROD_ORIGIN, // ✅ production frontend
+];
+
+// ✅ Express CORS (not critical for socket.io, but harmless & consistent)
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+  })
+);
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://192.168.68.109:5173"],
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
   },
 });
@@ -120,6 +137,8 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(3001, "0.0.0.0", () => {
-  console.log("🚀 SERVER RUNNING on 3001 (0.0.0.0)");
+// ✅ DEPLOYMENT FIX: platform provides PORT (Render/Railway/etc.)
+const PORT = process.env.PORT;
+server.listen(PORT, () => {
+  console.log(`🚀 SERVER RUNNING on ${PORT}`);
 });
