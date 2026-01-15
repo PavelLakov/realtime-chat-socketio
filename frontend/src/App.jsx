@@ -4,49 +4,57 @@ import "./App.css";
 import Chat from "./components/chat.jsx";
 
 function getSocketURL() {
-  // ✅ Netlify/Vite env var (set in Netlify as VITE_SOCKET_URL)
   const envUrl = import.meta.env.VITE_SOCKET_URL;
-
-  // If env var exists, use it (production)
   if (envUrl && envUrl.trim()) return envUrl.trim();
-
-  // Fallback for local dev (same behavior as before)
   return `http://${window.location.hostname}:3001`;
 }
 
 export default function App() {
-  const [socket, setSocket] = useState(null);
-
+  const [socket, setSocket] = useState(null); // ✅ normal state, allowed
   const [username, setUsername] = useState("");
   const [room, setRoom] = useState("");
   const [joined, setJoined] = useState(false);
 
-  // ✅ compute once (prevents unnecessary reconnects)
+  // compute once
   const socketURL = useMemo(() => getSocketURL(), []);
 
-  // ✅ keep your original logic: create socket in effect
   useEffect(() => {
-    const s = io(socketURL);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSocket(s);
+    const s = io(socketURL, {
+      transports: ["polling", "websocket"],
+      withCredentials: true,
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 800,
+      timeout: 20000,
+    });
+
+    // ✅ update state ONLY via event (ESLint-approved)
+    s.on("connect", () => {
+      setSocket(s);
+      console.log("✅ socket connected:", s.id);
+    });
+
+    s.on("connect_error", (err) => {
+      console.error("❌ socket error:", err.message);
+    });
 
     return () => {
       s.disconnect();
     };
   }, [socketURL]);
 
-  // ✅ keep your original logic: join_room event
   const joinRoom = () => {
     const u = username.trim();
     const r = room.trim();
-    if (!socket) return;
-    if (!u || !r) return;
+    if (!socket || !u || !r) return;
 
     socket.emit("join_room", { room: r, username: u });
     setJoined(true);
   };
 
-  // ✅ ONLY CHANGE: the login page UI
+  // ======================
+  // LOGIN SCREEN
+  // ======================
   if (!joined) {
     return (
       <div className="join-page">
@@ -86,9 +94,10 @@ export default function App() {
     );
   }
 
-  // ✅ IMPORTANT: do not render Chat until socket exists
+  // ======================
+  // CHAT SCREEN
+  // ======================
   if (!socket) return null;
 
-  // ✅ chat logic unchanged
   return <Chat socket={socket} username={username} room={room} />;
 }
