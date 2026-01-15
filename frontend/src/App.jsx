@@ -1,9 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { io } from "socket.io-client";
 import "./App.css";
 import Chat from "./components/chat.jsx";
 
 function getSocketURL() {
+  // ✅ Netlify/Vite env var (set in Netlify as VITE_SOCKET_URL)
+  const envUrl = import.meta.env.VITE_SOCKET_URL;
+
+  // If env var exists, use it (production)
+  if (envUrl && envUrl.trim()) return envUrl.trim();
+
+  // Fallback for local dev (same behavior as before)
   return `http://${window.location.hostname}:3001`;
 }
 
@@ -14,7 +21,8 @@ export default function App() {
   const [room, setRoom] = useState("");
   const [joined, setJoined] = useState(false);
 
-  const socketURL = getSocketURL();
+  // ✅ compute once (prevents unnecessary reconnects)
+  const socketURL = useMemo(() => getSocketURL(), []);
 
   // ✅ keep your original logic: create socket in effect
   useEffect(() => {
