@@ -1,0 +1,183 @@
+/* ===== WhatsApp-like UI for Chat.jsx (uses .chat-window / .message classes) ===== */
+
+.chat-window {
+  width: min(900px, 98vw);
+  margin: 18px auto;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.chat-header {
+  background: #0f6158;
+  color: #fff;
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.chat-header p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.95;
+}
+
+/* Right side controls */
+.users-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.users-area select {
+  border-radius: 10px;
+  border: none;
+  padding: 6px 10px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 12px;
+}
+
+.users-count {
+  font-size: 12px;
+  opacity: 0.9;
+  white-space: nowrap;
+}
+
+/* Body */
+.chat-body {
+  flex: 1;
+  background: #efe7df;
+  padding: 14px;
+  overflow-y: auto;
+}
+
+/* Empty state */
+.empty {
+  background: rgba(255, 255, 255, 0.85);
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.55);
+  margin: 10px auto;
+}
+
+/* Message rows */
+.message {
+  display: flex;
+  justify-content: flex-start;
+  margin: 6px 0;
+}
+
+/* System messages centered */
+.message.system {
+  justify-content: center;
+}
+
+/* Bubble */
+.message-content {
+  max-width: 68%;
+  padding: 9px 11px;
+  border-radius: 16px;
+  background: #ffffff;
+  position: relative;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  line-height: 1.25;
+}
+
+/* Left bubble “tail” */
+.message-content::after {
+  content: "";
+  position: absolute;
+  left: -6px;
+  bottom: 8px;
+  width: 10px;
+  height: 10px;
+  background: #ffffff;
+  transform: rotate(45deg);
+  border-bottom-right-radius: 2px;
+  box-shadow: -1px 1px 0 rgba(0, 0, 0, 0.03);
+}
+
+/* System pill style (no tail) */
+.system-message {
+  background: rgba(255, 255, 255, 0.8);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.55);
+  box-shadow: none;
+}
+
+.system-message::after {
+  display: none;
+}
+
+/* Author line */
+.message-meta {
+  margin-bottom: 4px;
+}
+
+.author {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Message text */
+.text {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+
+/* Footer */
+.chat-footer {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  background: #f6f7f8;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.chat-footer input {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  outline: none;
+  background: #fff;
+}
+
+.chat-footer input:focus {
+  border-color: rgba(15, 97, 88, 0.45);
+  box-shadow: 0 0 0 3px rgba(15, 97, 88, 0.1);
+}
+
+.chat-footer button {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: #34c759;
+  color: #fff;
+  font-size: 16px;
+  box-shadow: 0 6px 16px rgba(52, 199, 89, 0.35);
+}
+
+.chat-footer button:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 12px rgba(52, 199, 89, 0.28);
+}
