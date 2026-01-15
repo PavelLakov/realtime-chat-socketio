@@ -5,31 +5,38 @@ const { Server } = require("socket.io");
 
 const app = express();
 
-// ✅ ADD YOUR NETLIFY URL HERE
+// ✅ YOUR NETLIFY URL
 const PROD_ORIGIN = "https://live-chat-socketio.netlify.app";
 
-// ✅ keep all allowed origins in one place
+// ✅ allowlist
 const allowedOrigins = [
   "http://localhost:5173",
   "http://192.168.68.109:5173",
-  PROD_ORIGIN, // ✅ production frontend
+  PROD_ORIGIN,
 ];
 
-// ✅ Express CORS (not critical for socket.io, but harmless & consistent)
+// ✅ Express CORS (fine to keep)
 app.use(
   cors({
     origin: allowedOrigins,
     methods: ["GET", "POST"],
+    credentials: true, // ✅ important if you ever use cookies/auth
   })
 );
 
 const server = http.createServer(app);
 
+// ✅ Socket.IO: Render-safe settings
 const io = new Server(server, {
   cors: {
     origin: allowedOrigins,
     methods: ["GET", "POST"],
+    credentials: true,
   },
+
+  // ✅ IMPORTANT: allow polling first, then upgrade (works better on Render Free)
+  transports: ["polling", "websocket"],
+  allowUpgrades: true,
 });
 
 function timeNow() {
@@ -137,8 +144,10 @@ io.on("connection", (socket) => {
   });
 });
 
-// ✅ DEPLOYMENT FIX: platform provides PORT (Render/Railway/etc.)
-const PORT = process.env.PORT;
-server.listen(PORT, () => {
+// ✅ Render requires PORT, but keep fallback for local
+const PORT = process.env.PORT || 3001;
+
+// ✅ bind to 0.0.0.0 for cloud platforms
+server.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 SERVER RUNNING on ${PORT}`);
 });
