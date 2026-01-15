@@ -26,7 +26,7 @@ export default function App() {
 
   // ✅ keep your original logic: create socket in effect
   useEffect(() => {
-    const s = io(socketURL, { transports: ["websocket"] });
+    const s = io(socketURL);
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSocket(s);
 
